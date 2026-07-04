@@ -3,12 +3,23 @@ name: Security Scan Pipeline
 on: [push]
 
 jobs:
-  bandit-scan:
+  security-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Run Bandit
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install security tools
         run: |
-          pip install bandit
-          bandit -r .
+          pip install bandit safety
+
+      - name: Run Bandit (Code Scanning)
+        run: bandit -r .
+
+      - name: Run Safety (Dependency Scanning)
+        run: safety check
